@@ -116,7 +116,10 @@ for index, tag in enumerate(main_page_data):
                     if recital.find('b'):
                         recitals['number'] = recital.find('b').text
                     recitals['text'] = ' '.join(recital.text.split())
-                    recitals['link'] = recital.find('a').get('href')
+                    recital_link = recital.find('a').get('href')
+                    if not recital_link.startswith('http'):
+                        recital_link = url + recital.find('a').get('href')
+                    recitals['link'] = recital_link
                     if recitals:
                         articles['recitals'].append(recitals)
                     recitals = {}
