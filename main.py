@@ -110,13 +110,16 @@ for index, tag in enumerate(main_page_data):
             recital_check = soup.find('div', {'id': 'recital_toggle'})
             article_content = soup.find('div', class_='article_content')
             if recital_check:
-                recitals_data = recital_check.find('p')
-                recitals['number'] = recitals_data.find('b').text
+                recitals_data = recital_check.find('div', class_='row').find_all('p')
 
-                recitals['text'] = ' '.join(recitals_data.text.split())
-                if recitals:
-                    articles['recitals'].append(recitals)
-                recitals = {}
+                for recital in recitals_data:
+                    if recital.find('b'):
+                        recitals['number'] = recital.find('b').text
+                    recitals['text'] = ' '.join(recital.text.split())
+                    recitals['link'] = recital.find('a').get('href')
+                    if recitals:
+                        articles['recitals'].append(recitals)
+                    recitals = {}
 
             articles['text'] = ' '.join(article_content.find('div', class_='article_block').text.split())
             articles['eu_gdpr'] =  ' '.join(article_content.find('div', class_='article_info').find('span').next_sibling.text.split())
@@ -128,7 +131,8 @@ for index, tag in enumerate(main_page_data):
                 'text': '',
                 'recitals': []
             }
-
+    # if index > 3: 
+    #     break
 
 with open('data.json', 'w') as file:
-    json.dump(data_list, file, indent=4)
+    json.dump(data_list[::-1], file, indent=4)
